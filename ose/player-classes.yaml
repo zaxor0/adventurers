@@ -29,7 +29,7 @@ Cleric:
           '5': 0
         THAC0: 19
         XP: 0
-  Requirement: None
+  Requirements: None
   Spell Selection: Cleric Spells
   Spell-caster: true
   Weapons: Any Blunt
@@ -62,7 +62,7 @@ Dwarf:
           Wands: 9
         THAC0: 19
         XP: 0
-  Requirement:
+  Requirements:
     Constitution: 9
   Weapons:
   - Small
@@ -106,7 +106,7 @@ Elf:
           '5': 0
         THAC0: 19
         XP: 0
-  Requirement:
+  Requirements:
     Intelligence: 9
   Spell Selection: Magic-User Spells
   Spell-caster: true
@@ -137,7 +137,7 @@ Fighter:
           Wands: 13
         THAC0: 19
         XP: 0
-  Requirement: None
+  Requirements: None
   Weapons: Any
 Halfling:
   Armor:
@@ -170,7 +170,7 @@ Halfling:
           Wands: 9
         THAC0: 19
         XP: 0
-  Requirement:
+  Requirements:
     Constitution: 9
     Dexterity: 9
   Weapons: Any Small
@@ -205,7 +205,7 @@ Magic-User:
           '5': 0
         THAC0: 19
         XP: 0
-  Requirement: None
+  Requirements: None
   Spell Selection: Magic-User Spells
   Spell-caster: true
   Weapons: Dagger
@@ -235,6 +235,5 @@ Thief:
           Wands: 14
         THAC0: 19
         XP: 0
-  Requirement: None
+  Requirements: None
   Weapons: Any
-
