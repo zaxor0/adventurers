@@ -10,7 +10,8 @@ Cleric:
   - Alignment
   - Common
   Maximum-Level: 14
-  Prime-Requisite: Wisdom
+  Prime-Requisite: 
+  - Wisdom
   Progression:
     Level:
       '1':
@@ -49,7 +50,8 @@ Dwarf:
   - Goblin
   - Kobold
   Maximum-Level: 12
-  Prime-Requisite: Strength
+  Prime-Requisite: 
+  - Strength
   Progression:
     Level:
       '1':
@@ -124,7 +126,8 @@ Fighter:
   - Alignment
   - Common
   Maximum-Level: 14
-  Prime-Requisite: Strength
+  Prime-Requisite: 
+  - Strength
   Progression:
     Level:
       '1':
@@ -186,7 +189,8 @@ Magic-User:
   - Alignment
   - Common
   Maximum-Level: 14
-  Prime-Requisite: intelligence
+  Prime-Requisite: 
+  - Intelligence
   Progression:
     Level:
       '1':
@@ -222,7 +226,8 @@ Thief:
   - Alignment
   - Common
   Maximum-Level: 14
-  Prime-Requisite: Dexterity
+  Prime-Requisite:
+  - Dexterity
   Progression:
     Level:
       '1':
