@@ -1,0 +1,240 @@
+Cleric:
+  Armor:
+  - Any
+  - Shields
+  Class: Cleric
+  Description: Human adventurers who have sworn to serve a deity. They are trained
+    for battle and channel the power of their deity.
+  Hit-Dice: 1d6
+  Languages:
+  - Alignment
+  - Common
+  Maximum-Level: 14
+  Prime-Requisite: Wisdom
+  Progression:
+    Level:
+      '1':
+        HD: 1d6
+        Saving Throws:
+          Breath Attacks: 16
+          Death, Poison: 11
+          Paralysis, Petrify: 14
+          Spells, Rods, Staves: 15
+          Wands: 12
+        Spells:
+          '1': 0
+          '2': 0
+          '3': 0
+          '4': 0
+          '5': 0
+        THAC0: 19
+        XP: 0
+  Requirement: None
+  Spell Selection: Cleric Spells
+  Spell-caster: true
+  Weapons: Any Blunt
+Dwarf:
+  Armor:
+  - Any
+  - Shields
+  Class: Dwarf
+  Description: A non-magical demi-human mountain-residing race (that has some magical
+    resistances), this adventurer class is sturdy with skills in mining and dungeoneering
+  Hit-Dice: 1d8
+  Languages:
+  - Alignment
+  - Common
+  - Dwarvish
+  - Gnomish
+  - Goblin
+  - Kobold
+  Maximum-Level: 12
+  Prime-Requisite: Strength
+  Progression:
+    Level:
+      '1':
+        HD: 1d6
+        Saving Throws:
+          Breath Attacks: 13
+          Death, Poison: 8
+          Paralysis, Petrify: 10
+          Spells, Rods, Staves: 12
+          Wands: 9
+        THAC0: 19
+        XP: 0
+  Requirement:
+    Constitution: 9
+  Weapons:
+  - Small
+  - Normal
+Elf:
+  Armor:
+  - Any
+  - Shields
+  Class: Elf
+  Description: a magical demi-human woodland race, they are usually much more  highly
+    skilled and have spell cast-ing abilities rivalling the finest human magic users.
+    However, despite their inherent magic elves are unable to become clerics or
+    shamans.
+  Hit-Dice: 1d6
+  Languages:
+  - Alignment
+  - Common
+  - Elvish
+  - Gnoll
+  - Hobgoblin
+  - Orcish
+  Maximum-Level: 10
+  Prime-Requisite:
+  - Strength
+  - Intelligence
+  Progression:
+    Level:
+      '1':
+        HD: 1d6
+        Saving Throws:
+          Breath Attacks: 15
+          Death, Poison: 12
+          Paralysis, Petrify: 13
+          Spells, Rods, Staves: 15
+          Wands: 13
+        Spells:
+          '1': 1
+          '2': 0
+          '3': 0
+          '4': 0
+          '5': 0
+        THAC0: 19
+        XP: 0
+  Requirement:
+    Intelligence: 9
+  Spell Selection: Magic-User Spells
+  Spell-caster: true
+  Weapons: Any
+Fighter:
+  Armor:
+  - Any
+  - Shields
+  Class: Fighter
+  Description: Human adventurers dedicated to mastering the arts of combat and war.
+    In a group of adventurers, the role of fighters is to battle monsters and to
+    defend other characters
+  Hit-Dice: 1d8
+  Languages:
+  - Alignment
+  - Common
+  Maximum-Level: 14
+  Prime-Requisite: Strength
+  Progression:
+    Level:
+      '1':
+        HD: 1d6
+        Saving Throws:
+          Breath Attacks: 15
+          Death, Poison: 12
+          Paralysis, Petrify: 14
+          Spells, Rods, Staves: 16
+          Wands: 13
+        THAC0: 19
+        XP: 0
+  Requirement: None
+  Weapons: Any
+Halfling:
+  Armor:
+  - Any Small
+  - Shields
+  Class: Halfling
+  Description: "Small, rotund demihumans with furry feet and curly hair. They weigh\
+    \ about 60 pounds and are around 3\u2019 tall. Halflings are a friendly and\
+    \ welcoming folk. Above all, they love the comforts of home and are not known\
+    \ for their bravery. Halflings who gain treasure through adventuring will often\
+    \ use their wealth in pursuit of a quiet, comfortable life"
+  Hit-Dice: 1d8
+  Languages:
+  - Alignment
+  - Common
+  - Halfling
+  Maximum-Level: 8
+  Prime-Requisite:
+  - Strength
+  - Dexterity
+  Progression:
+    Level:
+      '1':
+        HD: 1d6
+        Saving Throws:
+          Breath Attacks: 13
+          Death, Poison: 8
+          Paralysis, Petrify: 10
+          Spells, Rods, Staves: 12
+          Wands: 9
+        THAC0: 19
+        XP: 0
+  Requirement:
+    Constitution: 9
+    Dexterity: 9
+  Weapons: Any Small
+Magic-User:
+  Armor:
+  - None
+  Class: Magic-User
+  Description: Human adventurers whose study of arcane secrets has taught them how
+    to cast spells. Magic-users are able to cast a greater number of increasingly
+    powerful spells as they advance in level.
+  Hit-Dice: 1d4
+  Languages:
+  - Alignment
+  - Common
+  Maximum-Level: 14
+  Prime-Requisite: intelligence
+  Progression:
+    Level:
+      '1':
+        HD: 1d6
+        Saving Throws:
+          Breath Attacks: 16
+          Death, Poison: 13
+          Paralysis, Petrify: 13
+          Spells, Rods, Staves: 15
+          Wands: 14
+        Spells:
+          '1': 1
+          '2': 0
+          '3': 0
+          '4': 0
+          '5': 0
+        THAC0: 19
+        XP: 0
+  Requirement: None
+  Spell Selection: Magic-User Spells
+  Spell-caster: true
+  Weapons: Dagger
+Thief:
+  Armor:
+  - Leather
+  - No Shields
+  Class: Thief
+  Description: Human adventurers who live by their skills of deception and stealth.
+    Their range of unique skills makes them very handy companions in adventures.
+    However, thieves are not always to be trusted.
+  Hit-Dice: 1d4
+  Languages:
+  - Alignment
+  - Common
+  Maximum-Level: 14
+  Prime-Requisite: Dexterity
+  Progression:
+    Level:
+      '1':
+        HD: 1d6
+        Saving Throws:
+          Breath Attacks: 16
+          Death, Poison: 13
+          Paralysis, Petrify: 13
+          Spells, Rods, Staves: 15
+          Wands: 14
+        THAC0: 19
+        XP: 0
+  Requirement: None
+  Weapons: Any
+
