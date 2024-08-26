@@ -3,13 +3,13 @@
 import random
 import yaml
 
-with open('ose/player-classes.yaml','r') as file:
+with open('player-classes.yaml','r') as file:
   playerClasses = yaml.safe_load(file)
 
 
 attr = { 'Strength' : 0, 'Intelligence' : 0, 'Wisdom' : 0, 'Dexterity' : 0, 'Constitution' : 0, 'Charisma' : 0 }
 
-def main():
+def rollChar(dumbVar):
   # roll stats
   highestRoll = 0
   for stat in attr:
@@ -59,17 +59,18 @@ def main():
           choicestClasses.append(pClass)
 
   playerClass = random.choice(choicestClasses)
-  characterSheet(playerClass, attr)
+  cSheet = characterSheet(playerClass, attr)
+  return cSheet 
 
 def characterSheet(playerClass, attr):
-  print('you are a', playerClass)
+  cSheet = 'Class: ' + playerClass + '\n' 
   for stat in attr:
     tabs = '\t'
     if len(stat) < 7:
       tabs = '\t\t'
-    print(stat,tabs,attr[stat])
-
-
+    statString = stat + tabs + str(attr[stat]) + '\n'
+    cSheet = cSheet + statString
+  return cSheet
 
 def diceRoll(dieCount,dieSides):
   dieTotal = 0
@@ -80,4 +81,3 @@ def diceRoll(dieCount,dieSides):
     dieTotal += dieVal
   return(dieTotal)
 
-main()
