@@ -20,21 +20,40 @@ def diceRoll(dieCount,dieSides):
 
 def rollEquip(charClass, dex):
   # basic gear
-  torches = str(diceRoll(1,6)) + ' torches' 
-  rations = str(diceRoll(1,6)) + ' ration' 
-  gear = [ 'Backpack', 'tinderbox', 'waterskin', torches, rations ]
+  torches = str(diceRoll(1,6))
+  rations = str(diceRoll(1,6))
+
+  gear = [ ]
+
+  advGearList = [ 
+    'Crowbar', 'Hammer, 12 spikes', 'Holy Water', 'Lantern, 3 oil flasks', 'Mirror (small) ', 'Pole 10\'',
+    'Rope 50\'', 'Rope 50\', Grappling Hook', 'Sack (large)', 'Sack (small)', 'Stakes (3), mallet', 'Wolfsbane (1 bunch)'
+    ]
+
+  firstItem = advGearList[diceRoll(1,12) - 1]
+  secondItem = advGearList[diceRoll(1,12) - 1]
+  while secondItem == firstItem:
+    secondItem = advGearList[diceRoll(1,12) - 1]
+  gear.append(firstItem)
+  gear.append(secondItem)
+  items = ''
+  for item in sorted(gear):
+    items = items + ', ' + item
+  gear = items[1:]
+  gear = gear + str(' ' * (46 - len(gear))) + '|'
+
   # armor
   if charClass == 'Magic User':
     armor = 'none'
   elif charClass == 'Thief':
-    armor = 'leather'
+    armor = 'Leather'
   else:
-    armor = [ 'leather', 'leather + S', 'chainmail', 'chainmail + S', 'platemail', 'platemail + S' ]
+    armor = [ 'Leather', 'Leather + S', 'Chain', 'Chain + S', 'Plate', 'Plate + S' ]
     armor = armor[diceRoll(1,6) - 1] 
-  armor = armor + str(' ' * (13 - len(armor)))
+  armor = armor + str(' ' * (11 - len(armor)))
 
-  ac = { 'leather' : 7, 'leather + S' : 6, 'chainmail' : 5, 'chainmail + S' : 4, 'platemail' : 3, 'platemail + S' : 2 }
-  ac = ac[armor]
+  ac = { 'none' : 9, 'Leather' : 7, 'Leather + S' : 6, 'Chain' : 5, 'Chain + S' : 4, 'Plate' : 3, 'Plate + S' : 2 }
+  ac = ac[armor.strip()]
   dexMod = { 3 : -3, 5 : -2, 8 : -1, 12 : 0, 15 : 1, 17 : 2, 18 : 3}
   for dex in dexMod:
     mod = dexMod[dex]
@@ -54,12 +73,16 @@ def rollEquip(charClass, dex):
       'Battle axe', 'Crossbow + 20 bolts', 'Hand axe', 'Mace', 'Pole arm', 'Short bow + 20 arrows', 
       'Short sword', 'Silver dagger', 'Sling + 20 stones', 'Spear', 'Sword', 'War hammer' 
       ]
+    rangeWeapons = [ 'Crossbow + 20 bolts', 'Short bow + 20 arrows', 'Sling + 20 stones' ]
+    meleeWeapons = [ 'Battle axe', 'Hand axe', 'Mace', 'Pole arm', 'Short sword', 'Silver dagger','Spear', 'Sword', 'War hammer']
     weapon = weapons[diceRoll(1,12) - 1]
     secondWeapon = weapons[diceRoll(1,12) - 1]
     while secondWeapon == weapon:
       secondWeapon = weapons[diceRoll(1,12) - 1]
+    if weapon in rangeWeapons and secondWeapon in rangeWeapons:
+      secondWeapon = meleeWeapons[diceRoll(1,9) - 1]
     weapon = weapon + ' , ' + secondWeapon
-  return ac, armor, weapon, gear
+  return ac, armor, weapon, gear, torches, rations
 
 abilities = ['STR', 'INT','WIS','DEX','CON','CHA']
 classes = ['Fighter', 'Magic User', 'Cleric', 'Thief']
@@ -68,8 +91,9 @@ party = []
 
 for a in abilities:
   print(a + ' ',end='')
-print(' | Class      | HP | Armor         | Weapon                |')
-print('-------------------------|------------|----|---------------|----------------------')
+
+print('| Class      | HP | AC | Armor       | Weapon                             | Gear                                         | T | R |')
+print('------------------------|------------|----|----|-------------|------------------------------------|----------------------------------------------|---|---|')
 
 for i in range(charCount):
   stats = []
@@ -122,7 +146,7 @@ for i in range(charCount):
   elif charClass in [ 'Magic User', 'Thief']:
     hp = diceRoll(1,4)
 
-  armor, weapon, gear = rollEquip(charClass, stats[3])
+  ac, armor, weapon, gear, torches, rations = rollEquip(charClass, stats[3])
 
   # print sheet
   for roll in stats:
@@ -132,6 +156,7 @@ for i in range(charCount):
       roll = ' ' + str(roll)
     print(roll + ' ', end='')
   ws = ' ' * (10 - len(charClass))
-  print(' | ' + charClass + str(ws) + ' |  ' + str(hp) + ' | ' + armor + ' | ' + weapon )
-#  print(str(' ' * 40) + str(gear))
+  ws2 = ' ' * (35 - len(weapon))
+  print('| ' + charClass + ws + ' |  ' + str(hp) + ' |  ' + str(ac) + ' | ' + armor + ' | ' + weapon + ws2 + '|' + str(gear) + ' ' + torches + ' | '  + rations + ' |' ) 
+print('...Everyone has a Backpack, tinderbox, and waterskin. T = Torches, R = Rations')
 quit()
