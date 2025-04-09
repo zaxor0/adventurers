@@ -40,7 +40,7 @@ def rollEquip(charClass, dex):
   for item in sorted(gear):
     items = items + ', ' + item
   gear = items[1:]
-  gear = gear + str(' ' * (46 - len(gear))) + '|'
+#  gear = gear + str(' ' * (46 - len(gear))) + '|'
 
   # armor
   if charClass == 'Magic User':
@@ -48,11 +48,11 @@ def rollEquip(charClass, dex):
   elif charClass == 'Thief':
     armor = 'Leather'
   else:
-    armor = [ 'Leather', 'Leather + S', 'Chain', 'Chain + S', 'Plate', 'Plate + S' ]
+    armor = [ 'Leather', 'Leather, Shield', 'Chain', 'Chain, Shield', 'Plate', 'Plate, Shield' ]
     armor = armor[diceRoll(1,6) - 1] 
-  armor = armor + str(' ' * (11 - len(armor)))
+#  armor = armor + str(' ' * (11 - len(armor)))
 
-  ac = { 'none' : 9, 'Leather' : 7, 'Leather + S' : 6, 'Chain' : 5, 'Chain + S' : 4, 'Plate' : 3, 'Plate + S' : 2 }
+  ac = { 'none' : 9, 'Leather' : 7, 'Leather, Shield' : 6, 'Chain' : 5, 'Chain, Shield' : 4, 'Plate' : 3, 'Plate, Shield' : 2 }
   ac = ac[armor.strip()]
   dexMod = { 3 : -3, 5 : -2, 8 : -1, 12 : 0, 15 : 1, 17 : 2, 18 : 3}
   for dex in dexMod:
@@ -67,7 +67,7 @@ def rollEquip(charClass, dex):
     secondWeapon = weapons[diceRoll(1,4) - 1]
     while secondWeapon == weapon:
       secondWeapon = weapons[diceRoll(1,4) - 1]
-    weapon = weapon + ' , ' + secondWeapon
+    weapon = weapon + ', ' + secondWeapon
   else:
     weapons = [ 
       'Battle axe', 'Crossbow + 20 bolts', 'Hand axe', 'Mace', 'Pole arm', 'Short bow + 20 arrows', 
@@ -81,19 +81,23 @@ def rollEquip(charClass, dex):
       secondWeapon = weapons[diceRoll(1,12) - 1]
     if weapon in rangeWeapons and secondWeapon in rangeWeapons:
       secondWeapon = meleeWeapons[diceRoll(1,9) - 1]
-    weapon = weapon + ' , ' + secondWeapon
-  return ac, armor, weapon, gear, torches, rations
+    weapon = weapon + ', ' + secondWeapon
+
+  gold = diceRoll(3,6)
+
+  return ac, armor, weapon, gear, torches, rations, gold
 
 abilities = ['STR', 'INT','WIS','DEX','CON','CHA']
 classes = ['Fighter', 'Magic User', 'Cleric', 'Thief']
 party = []
+totalGold = 0
 
 
 for a in abilities:
   print(a + ' ',end='')
 
-print('| Class      | HP | AC | Armor       | Weapon                             | Gear                                         | T | R |')
-print('------------------------|------------|----|----|-------------|------------------------------------|----------------------------------------------|---|---|')
+print('| Class      | HP | AC | Equipment                                                  | T | R | G |')
+print('------------------------|------------|----|----|------------------------------------------------------------|---|---|---|')
 
 for i in range(charCount):
   stats = []
@@ -128,16 +132,19 @@ for i in range(charCount):
   if stats[4] >= 9 and stats[3] >= 9:
     possibleClasses.append('Halfling')
 
-  # keep the party to unique classes only
-  charClass = random.choice(possibleClasses)
-#  print(charClass, party)
-  if charClass in party:
-    possibleClasses.remove(charClass)
-    if len(party) > 1 :
-      charClass = random.choice(possibleClasses)
-    else:
-      charClass = possibleClasses[0]
-  party.append(charClass)
+  if len(possibleClasses) > 1:
+    # keep the party to unique classes only
+    charClass = random.choice(possibleClasses)
+    # print(charClass, party)
+    if charClass in party:
+      possibleClasses.remove(charClass)
+      if len(party) > 1 :
+        charClass = random.choice(possibleClasses)
+      else:
+        charClass = possibleClasses[0]
+    party.append(charClass)
+  else:
+    charClass = possibleClasses[0]
 
   if charClass in [ 'Fighter', 'Dwarf']:
     hp = diceRoll(1,8)
@@ -146,7 +153,8 @@ for i in range(charCount):
   elif charClass in [ 'Magic User', 'Thief']:
     hp = diceRoll(1,4)
 
-  ac, armor, weapon, gear, torches, rations = rollEquip(charClass, stats[3])
+  ac, armor, weapon, gear, torches, rations, gold = rollEquip(charClass, stats[3])
+  totalGold += gold
 
   # print sheet
   for roll in stats:
@@ -156,7 +164,14 @@ for i in range(charCount):
       roll = ' ' + str(roll)
     print(roll + ' ', end='')
   ws = ' ' * (10 - len(charClass))
-  ws2 = ' ' * (35 - len(weapon))
-  print('| ' + charClass + ws + ' |  ' + str(hp) + ' |  ' + str(ac) + ' | ' + armor + ' | ' + weapon + ws2 + '|' + str(gear) + ' ' + torches + ' | '  + rations + ' |' ) 
-print('...Everyone has a Backpack, tinderbox, and waterskin. T = Torches, R = Rations')
+  gearString = 'A: ' + armor + '  W: ' + weapon
+  gearString = gearString + (' ' * (58 - len(gearString)))
+  gearString2 =  '                        |            |    |    ' +'| E:'+ gear
+  gearString2 = gearString2 + (' ' * (108 - len(gearString2))) + '|   |   |   |'
+  gold = (' ' * (2 - len(str(gold)))) + str(gold)
+  print('| ' + charClass + ws + ' |  ' + str(hp) + ' |  ' + str(ac) + ' | ' + gearString + ' | ' + torches + ' | '  + rations + ' | ' + str(gold)  + '|' )
+  print(gearString2)
+  print()
+print('...Everyone has a Backpack, tinderbox, and waterskin. T = Torches, R = Rations G = Gold')
+print('...Total Party Gold:',str(totalGold))
 quit()
