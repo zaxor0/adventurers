@@ -3,12 +3,29 @@
 import random
 import sys
 
+# ARGUMENTS
 try:
   charCount = int(sys.argv[1])
 except:
   print('missing number of characters')
   quit()
 
+# VARIABLES
+party = []
+totalGold = 0
+abilities = ['STR', 'INT','WIS','DEX','CON','CHA']
+classes = {'Fighter' : 8,  'Dwarf' : 8, 'Cleric': 6, 'Elf': 6, 'Halfling': 6, 'Magic User': 4, 'Thief':4 }
+advGearList = [ 
+  'Crowbar', 'Hammer, 12 spikes', 'Holy Water', 'Lantern, 3 oil flasks', 'Mirror (small) ', 'Pole 10\'',
+  'Rope 50\'', 'Rope 50\', Grappling Hook', 'Sack (large)', 'Sack (small)', 'Stakes (3), mallet', 'Wolfsbane (1 bunch)'
+  ]
+armorDict = { 'None' : 9, 'Leather' : 7, 'Leather, Shield' : 6, 'Chain' : 5, 'Chain, Shield' : 4, 'Plate' : 3, 'Plate, Shield' : 2 }
+weapons = [ 'Battle axe', 'Crossbow + 20 bolts', 'Hand axe', 'Mace', 'Pole arm', 'Short bow + 20 arrows', 'Short sword', 'Silver dagger', 'Sling + 20 stones', 'Spear', 'Sword', 'War hammer' ]
+meleeWeapons = [ 'Battle axe', 'Hand axe', 'Mace', 'Pole arm', 'Short sword', 'Silver dagger','Spear', 'Sword', 'War hammer']
+clericWeapons = [ 'Mace', 'Sling + 20 stones', 'Staff', 'War hammer' ]
+dexMod = { 0 : -3, 4 : -2, 6 : -1, 9 : 0, 13 : 1, 16 : 2, 18 : 3}
+
+# FUNCTIONS
 def diceRoll(dieCount,dieSides):
   dieTotal = 0
   for i in range(0,dieCount):
@@ -23,12 +40,7 @@ def rollEquip(charClass, dex):
   torches = str(diceRoll(1,6))
   rations = str(diceRoll(1,6))
 
-  gear = [ ]
-
-  advGearList = [ 
-    'Crowbar', 'Hammer, 12 spikes', 'Holy Water', 'Lantern, 3 oil flasks', 'Mirror (small) ', 'Pole 10\'',
-    'Rope 50\'', 'Rope 50\', Grappling Hook', 'Sack (large)', 'Sack (small)', 'Stakes (3), mallet', 'Wolfsbane (1 bunch)'
-    ]
+  gear = []
 
   firstItem = advGearList[diceRoll(1,12) - 1]
   secondItem = advGearList[diceRoll(1,12) - 1]
@@ -40,58 +52,44 @@ def rollEquip(charClass, dex):
   for item in sorted(gear):
     items = items + ', ' + item
   gear = items[1:]
-#  gear = gear + str(' ' * (46 - len(gear))) + '|'
 
   # armor
   if charClass == 'Magic User':
-    armor = 'none'
+    armor = 'None'
   elif charClass == 'Thief':
     armor = 'Leather'
   else:
-    armor = [ 'Leather', 'Leather, Shield', 'Chain', 'Chain, Shield', 'Plate', 'Plate, Shield' ]
+    armor = [*armorDict] # unpack dict keys (armor by name) into an array
     armor = armor[diceRoll(1,6) - 1] 
-#  armor = armor + str(' ' * (11 - len(armor)))
 
-  ac = { 'none' : 9, 'Leather' : 7, 'Leather, Shield' : 6, 'Chain' : 5, 'Chain, Shield' : 4, 'Plate' : 3, 'Plate, Shield' : 2 }
-  ac = ac[armor.strip()]
-  dexMod = { 3 : -3, 5 : -2, 8 : -1, 12 : 0, 15 : 1, 17 : 2, 18 : 3}
-  for dex in dexMod:
-    mod = dexMod[dex]
+  ac = armorDict[armor]
+  for score in dexMod:
+    if score <= dex:
+      mod = dexMod[score]
 
-  # weapon
+  ## weapon selection
+  # magic users only get daggers
   if charClass == 'Magic User':
     weapon = 'Dagger'
-  elif charClass == 'Cleric':
-    weapons = [ 'Mace', 'Sling + 20 stones', 'Staff', 'War hammer' ]
-    weapon = weapons[diceRoll(1,4) - 1]
-    secondWeapon = weapons[diceRoll(1,4) - 1]
+
+  # clerics only get blunt weapons
+  if charClass == 'Cleric':
+    weapon = clericWeapons[diceRoll(1,4) - 1]
+    secondWeapon = clericWeapons[diceRoll(1,4) - 1]
     while secondWeapon == weapon:
-      secondWeapon = weapons[diceRoll(1,4) - 1]
-    weapon = weapon + ', ' + secondWeapon
-  else:
-    weapons = [ 
-      'Battle axe', 'Crossbow + 20 bolts', 'Hand axe', 'Mace', 'Pole arm', 'Short bow + 20 arrows', 
-      'Short sword', 'Silver dagger', 'Sling + 20 stones', 'Spear', 'Sword', 'War hammer' 
-      ]
-    rangeWeapons = [ 'Crossbow + 20 bolts', 'Short bow + 20 arrows', 'Sling + 20 stones' ]
-    meleeWeapons = [ 'Battle axe', 'Hand axe', 'Mace', 'Pole arm', 'Short sword', 'Silver dagger','Spear', 'Sword', 'War hammer']
-    weapon = weapons[diceRoll(1,12) - 1]
-    secondWeapon = weapons[diceRoll(1,12) - 1]
-    while secondWeapon == weapon:
-      secondWeapon = weapons[diceRoll(1,12) - 1]
-    if weapon in rangeWeapons and secondWeapon in rangeWeapons:
-      secondWeapon = meleeWeapons[diceRoll(1,9) - 1]
+      secondWeapon = clericWeapons[diceRoll(1,4) - 1]
     weapon = weapon + ', ' + secondWeapon
 
+  # everyone else get 1 melee and 1 second weapon
+  weapon = meleeWeapons[diceRoll(1,9) - 1]
+  secondWeapon = weapons[diceRoll(1,12) - 1]
+  weapon = weapon + ', ' + secondWeapon
+  
+  # everyon gets 3d6 of gold
   gold = diceRoll(3,6)
 
+  # return all equipment
   return ac, armor, weapon, gear, torches, rations, gold
-
-abilities = ['STR', 'INT','WIS','DEX','CON','CHA']
-classes = ['Fighter', 'Magic User', 'Cleric', 'Thief']
-party = []
-totalGold = 0
-
 
 for a in abilities:
   print(a + ' ',end='')
@@ -112,7 +110,8 @@ for i in range(charCount):
   possibleClasses = []
   # if str, int, wis, or dex is the highest, default to the appropriate class
   if highPos < 4:
-    possibleClasses.append(classes[highPos])
+    arrayClasses = [*classes]
+    possibleClasses.append(arrayClasses[highPos])
   # if not the highest, of the first 4 stats, add the most appropriate to the class possibilities
   elif stats[0] > stats[1] and stats[0] > 2 and stats[0] > 3:
     possibleClasses.append('Fighter')
@@ -146,12 +145,8 @@ for i in range(charCount):
   else:
     charClass = possibleClasses[0]
 
-  if charClass in [ 'Fighter', 'Dwarf']:
-    hp = diceRoll(1,8)
-  elif charClass in [ 'Cleric', 'Elf', 'Halfling' ]:
-    hp = diceRoll(1,6)
-  elif charClass in [ 'Magic User', 'Thief']:
-    hp = diceRoll(1,4)
+  hd = classes[charClass]
+  hp = diceRoll(1,hd)
 
   ac, armor, weapon, gear, torches, rations, gold = rollEquip(charClass, stats[3])
   totalGold += gold
