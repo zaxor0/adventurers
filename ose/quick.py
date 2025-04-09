@@ -99,30 +99,25 @@ print('------------------------|------------|----|----|-------------------------
 
 for i in range(charCount):
   stats = []
-  highPos = 0
   for j in range(0,6):
     roll = diceRoll(3,6)
     stats.append(roll)
-    if stats[j] > stats[highPos]:
-      highPos = j
+  
+  primaryStats = stats[:4]
+  highestPrimary = max(primaryStats)
+  highestStat = max(stats) 
 
   # generate array of possible classes for this character
   possibleClasses = []
-  # if str, int, wis, or dex is the highest, default to the appropriate class
-  if highPos < 4:
-    arrayClasses = [*classes]
-    possibleClasses.append(arrayClasses[highPos])
-  # if not the highest, of the first 4 stats, add the most appropriate to the class possibilities
-  elif stats[0] > stats[1] and stats[0] > 2 and stats[0] > 3:
+  if stats[0] == highestPrimary:
     possibleClasses.append('Fighter')
-  elif stats[1] > stats[0] and stats[1] > 2 and stats[0] > 3:
+  if stats[1] == highestPrimary:
     possibleClasses.append('Magic User')
-  elif stats[2] > stats[0] and stats[2] > 1 and stats[0] > 3:
+  if stats[2] == highestPrimary:
     possibleClasses.append('Cleric')
-  elif stats[3] > stats[0] and stats[3] > 1 and stats[3] > 2:
+  if stats[3] == highestPrimary:
     possibleClasses.append('Thief')
-  else:
-    possibleClasses.append('Fighter')
+
   # classes with min. req.
   if stats[4] >= 9:
     possibleClasses.append('Dwarf')
