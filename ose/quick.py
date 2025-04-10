@@ -28,7 +28,9 @@ armorDict = { 'None' : 9, 'Leather' : 7, 'Leather, Shield' : 6, 'Chain' : 5, 'Ch
 weapons = [ 'Battle axe', 'Crossbow + 20 bolts', 'Hand axe', 'Mace', 'Pole arm', 'Short bow + 20 arrows', 'Short sword', 'Silver dagger', 'Sling + 20 stones', 'Spear', 'Sword', 'War hammer' ]
 meleeWeapons = [ 'Battle axe', 'Hand axe', 'Mace', 'Pole arm', 'Short sword', 'Silver dagger','Spear', 'Sword', 'War hammer']
 clericWeapons = [ 'Mace', 'Sling + 20 stones', 'Staff', 'War hammer' ]
-dexMod = { 0 : -3, 4 : -2, 6 : -1, 9 : 0, 13 : 1, 16 : 2, 18 : 3}
+standardMod = { 3 : -3, 4 : -2, 6 : -1, 9 : 0, 13 : 1, 16 : 2, 18 : 3}
+intMod = { 3 : 0, 13 : 1, 16 : 2, 18 : 3}
+chaMod = { 3 : -2, 4 : -1, 6 : -1, 9 : 0, 13 : 1, 16 : 1, 18 : 2}
 spells = ['Charm Person', 'Detect Magic', 'Floating Disc', 'Hold Portal', 'Light', 'Magic Missile', 'Protection from Evil', 'Read Language','Read Magic', 'Shield', 'Sleep', 'Ventriloquism' ]
 
 # FUNCTIONS
@@ -69,9 +71,10 @@ def rollEquip(charClass, dex):
     armor = armor[diceRoll(1,6) - 1] 
 
   ac = armorDict[armor]
-  for score in dexMod:
+  for score in standardMod:
     if score <= dex:
-      mod = dexMod[score]
+      mod = standardMod[score]
+  ac = ac - mod
 
   ## weapon selection
   # magic users only get daggers
@@ -162,7 +165,24 @@ for i in range(charCount):
   ws = ' ' * (10 - len(charClass))
   gearString = 'A: ' + armor + '  W: ' + weapon
   gearString = gearString + (' ' * (58 - len(gearString)))
-  gearString2 =  '                        |            |    |    ' +'| E:'+ gear
+
+  mods = []
+  position = 0
+  for roll in stats:
+    position += 1
+    if position == 2:    # intelligence
+      statMod = intMod
+    elif position == 6: # charisma
+      statMod = chaMod
+    else: 
+      statMod = standardMod
+    for score in statMod:
+      if score <= roll:
+        mod = standardMod[score]
+    mods.append(mod)
+  modStr =  ' ' + str(mods)
+
+  gearString2 =  modStr +  '  |            |    |    ' +'| E:'+ gear
   gearString2 = gearString2 + (' ' * (108 - len(gearString2))) + '|'
   gold = (' ' * (2 - len(str(gold)))) + str(gold)
 
