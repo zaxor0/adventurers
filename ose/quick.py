@@ -14,7 +14,12 @@ except:
 party = []
 totalGold = 0
 abilities = ['STR', 'INT','WIS','DEX','CON','CHA']
-classes = {'Fighter' : 8,  'Dwarf' : 8, 'Cleric': 6, 'Elf': 6, 'Halfling': 6, 'Magic User': 4, 'Thief':4 }
+classes = {
+  'Fighter' : { 'hd' :  8, 'saves' : [12, 13, 14, 15, 16] },  'Dwarf' : { 'hd':  8 , 'saves' : [8, 9, 10, 13, 12] },
+  'Cleric': { 'hd' : 6 , 'saves' : [11, 12, 14, 16, 15] },  'Elf': { 'hd' : 6, 'saves' : [12, 13, 13, 15, 15] } , 
+  'Halfling': { 'hd' : 6 , 'saves' : [8, 9, 10, 13, 12] }, 'Magic User': { 'hd' : 4, 'saves' : [13, 14, 13, 16, 15] }, 
+  'Thief': { 'hd' : 4 , 'saves' : [13, 14, 13, 16, 15] } 
+  }
 advGearList = [ 
   'Crowbar', 'Hammer, 12 spikes', 'Holy Water', 'Lantern, 3 oil flasks', 'Mirror (small) ', 'Pole 10\'',
   'Rope 50\'', 'Rope 50\', Grappling Hook', 'Sack (large)', 'Sack (small)', 'Stakes (3), mallet', 'Wolfsbane (1 bunch)'
@@ -24,6 +29,7 @@ weapons = [ 'Battle axe', 'Crossbow + 20 bolts', 'Hand axe', 'Mace', 'Pole arm',
 meleeWeapons = [ 'Battle axe', 'Hand axe', 'Mace', 'Pole arm', 'Short sword', 'Silver dagger','Spear', 'Sword', 'War hammer']
 clericWeapons = [ 'Mace', 'Sling + 20 stones', 'Staff', 'War hammer' ]
 dexMod = { 0 : -3, 4 : -2, 6 : -1, 9 : 0, 13 : 1, 16 : 2, 18 : 3}
+spells = ['Charm Person', 'Detect Magic', 'Floating Disc', 'Hold Portal', 'Light', 'Magic Missile', 'Protection from Evil', 'Read Language','Read Magic', 'Shield', 'Sleep', 'Ventriloquism' ]
 
 # FUNCTIONS
 def diceRoll(dieCount,dieSides):
@@ -91,11 +97,11 @@ def rollEquip(charClass, dex):
   # return all equipment
   return ac, armor, weapon, gear, torches, rations, gold
 
+print('                                                                                                            [   equip   ] [       saves       ]')
 for a in abilities:
   print(a + ' ',end='')
-
-print('| Class      | HP | AC | Equipment                                                  | T | R | G |')
-print('------------------------|------------|----|----|------------------------------------------------------------|---|---|---|')
+print('| Class      | HP | AC | Equipment                                                  | T | R | G | |  D   W   P   B   S |')
+print('------------------------|------------|----|----|------------------------------------------------------------|---|---|---| |--------------------|')
 
 for i in range(charCount):
   stats = []
@@ -140,7 +146,7 @@ for i in range(charCount):
   else:
     charClass = possibleClasses[0]
 
-  hd = classes[charClass]
+  hd = classes[charClass]['hd']
   hp = diceRoll(1,hd)
 
   ac, armor, weapon, gear, torches, rations, gold = rollEquip(charClass, stats[3])
@@ -157,11 +163,26 @@ for i in range(charCount):
   gearString = 'A: ' + armor + '  W: ' + weapon
   gearString = gearString + (' ' * (58 - len(gearString)))
   gearString2 =  '                        |            |    |    ' +'| E:'+ gear
-  gearString2 = gearString2 + (' ' * (108 - len(gearString2))) + '|   |   |   |'
+  gearString2 = gearString2 + (' ' * (108 - len(gearString2))) + '|'
   gold = (' ' * (2 - len(str(gold)))) + str(gold)
-  print('| ' + charClass + ws + ' |  ' + str(hp) + ' |  ' + str(ac) + ' | ' + gearString + ' | ' + torches + ' | '  + rations + ' | ' + str(gold)  + '|' )
-  print(gearString2)
-  print()
+
+  saveStr = ' |'
+  for save in classes[charClass]['saves']:
+    saveStr = saveStr + (' ' * (3 - len(str(save)))) + str(save) + ' '
+  saveStr = saveStr + '|'
+
+  if charClass == 'Magic User':
+    spell = '[ Spells: ' + random.choice(spells) + ' ]'
+  elif charClass == 'Cleric':
+    spell = 'TU -- 1 HD: 7, 2 HD: 9, 3 HD: 11 |'
+  else:
+   spell = '' 
+
+  print(
+    '| ' + charClass + ws + ' |  ' + str(hp) + ' |  ' + str(ac) + ' | ' + gearString + ' | ' + torches + ' | '  + rations + ' | ' + str(gold)  + '|' + saveStr 
+    )
+  print(gearString2, spell)
+  print('-' * 143)
 print('...Everyone has a Backpack, tinderbox, and waterskin. T = Torches, R = Rations G = Gold')
 print('...Total Party Gold:',str(totalGold))
 quit()
