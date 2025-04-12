@@ -12,6 +12,7 @@ except:
 
 # VARIABLES
 party = []
+partyClasses = []
 totalGold = 0
 abilities = ['STR', 'INT','WIS','DEX','CON','CHA']
 classes = {
@@ -21,8 +22,8 @@ classes = {
   'Thief': { 'hd' : 4 , 'saves' : [13, 14, 13, 16, 15] } 
   }
 advGearList = [ 
-  'Crowbar', 'Hammer, 12 spikes', 'Holy Water', 'Lantern, 3 oil flasks', 'Mirror (small) ', 'Pole 10\'',
-  'Rope 50\'', 'Rope 50\', Grappling Hook', 'Sack (large)', 'Sack (small)', 'Stakes (3), mallet', 'Wolfsbane (1 bunch)'
+  'Crowbar', 'Hammer +12 spikes', 'Holy Water', 'Lantern +3 oil flasks', 'Mirror (small metal)', 'Pole 10\'',
+  'Rope 50\'', 'Rope 50\' +Grappling Hook', 'Sack (large)', 'Sack (small)', 'Stakes (3) +Mallet', 'Wolfsbane (1 bunch)'
   ]
 armorDict = { 'None' : 9, 'Leather' : 7, 'Leather, Shield' : 6, 'Chain' : 5, 'Chain, Shield' : 4, 'Plate' : 3, 'Plate, Shield' : 2 }
 weapons = [ 'Battle axe', 'Crossbow + 20 bolts', 'Hand axe', 'Mace', 'Pole arm', 'Short bow + 20 arrows', 'Short sword', 'Silver dagger', 'Sling + 20 stones', 'Spear', 'Sword', 'War hammer' ]
@@ -34,6 +35,17 @@ chaMod = { 3 : -2, 4 : -1, 6 : -1, 9 : 0, 13 : 1, 16 : 1, 18 : 2}
 spells = ['Charm Person', 'Detect Magic', 'Floating Disc', 'Hold Portal', 'Light', 'Magic Missile', 'Protection from Evil', 'Read Language','Read Magic', 'Shield', 'Sleep', 'Ventriloquism' ]
 
 # FUNCTIONS
+def printSheets(party):
+  for row in range(len(charSheet)):
+    line = ''
+    for char in range(len(party)):
+      charLine = party[char][row]
+      ws = ' ' * (23 - len(charLine)) 
+      charLine = ' '  + charLine + ws + '|'
+      line = line + charLine
+    print(line)
+
+
 def diceRoll(dieCount,dieSides):
   dieTotal = 0
   for i in range(0,dieCount):
@@ -54,12 +66,22 @@ def rollEquip(charClass, dex):
   secondItem = advGearList[diceRoll(1,12) - 1]
   while secondItem == firstItem:
     secondItem = advGearList[diceRoll(1,12) - 1]
-  gear.append(firstItem)
-  gear.append(secondItem)
-  items = ''
-  for item in sorted(gear):
-    items = items + ', ' + item
-  gear = items[1:]
+  if '+' in firstItem:
+    gear.append(firstItem.split('+')[0])
+    gear.append(firstItem.split('+')[1])
+  else:
+    gear.append(firstItem)
+  if '+' in secondItem:
+    gear.append(secondItem.split('+')[0])
+    gear.append(secondItem.split('+')[1])
+  else:
+    gear.append(secondItem)
+
+  if len(gear) == 3:
+    gear.append(' ')
+  if len(gear) == 2:
+    gear.append(' ')
+    gear.append(' ')
 
   # armor
   if charClass == 'Magic User':
@@ -77,9 +99,10 @@ def rollEquip(charClass, dex):
   ac = ac - mod
 
   ## weapon selection
+  weaponSelection = []
   # magic users only get daggers
   if charClass == 'Magic User':
-    weapon = 'Dagger'
+    weaponSelection.append('Dagger')
 
   # clerics only get blunt weapons
   if charClass == 'Cleric':
@@ -87,24 +110,20 @@ def rollEquip(charClass, dex):
     secondWeapon = clericWeapons[diceRoll(1,4) - 1]
     while secondWeapon == weapon:
       secondWeapon = clericWeapons[diceRoll(1,4) - 1]
-    weapon = weapon + ', ' + secondWeapon
+    weaponSelection.append(weapon)
+    weaponSelection.append(secondWeapon)
 
   # everyone else get 1 melee and 1 second weapon
   weapon = meleeWeapons[diceRoll(1,9) - 1]
   secondWeapon = weapons[diceRoll(1,12) - 1]
-  weapon = weapon + ', ' + secondWeapon
+  weaponSelection.append(weapon)
+  weaponSelection.append(secondWeapon)
   
   # everyon gets 3d6 of gold
   gold = diceRoll(3,6)
 
   # return all equipment
-  return ac, armor, weapon, gear, torches, rations, gold
-
-print('                                                                                                            [   equip   ] [       saves       ]')
-for a in abilities:
-  print(a + ' ',end='')
-print('| Class      | HP | AC | Equipment                                                  | T | R | G | |  D   W   P   B   S |')
-print('------------------------|------------|----|----|------------------------------------------------------------|---|---|---| |--------------------|')
+  return ac, armor, weaponSelection, gear, torches, rations, gold
 
 for i in range(charCount):
   stats = []
@@ -145,26 +164,12 @@ for i in range(charCount):
         charClass = random.choice(possibleClasses)
       else:
         charClass = possibleClasses[0]
-    party.append(charClass)
+    partyClasses.append(charClass)
   else:
     charClass = possibleClasses[0]
 
-  hd = classes[charClass]['hd']
-  hp = diceRoll(1,hd)
-
   ac, armor, weapon, gear, torches, rations, gold = rollEquip(charClass, stats[3])
   totalGold += gold
-
-  # print sheet
-  for roll in stats:
-    if roll < 10:
-      roll = '  ' + str(roll)
-    else:
-      roll = ' ' + str(roll)
-    print(roll + ' ', end='')
-  ws = ' ' * (10 - len(charClass))
-  gearString = 'A: ' + armor + '  W: ' + weapon
-  gearString = gearString + (' ' * (58 - len(gearString)))
 
   mods = []
   position = 0
@@ -180,29 +185,78 @@ for i in range(charCount):
       if score <= roll:
         mod = standardMod[score]
     mods.append(mod)
-  modStr =  ' ' + str(mods)
+  modStr = ''
+  for mod in mods:
+    ws = ' ' * (4 - len(str(mod)))
+    modStr = modStr + ws + str(mod)
 
-  gearString2 =  modStr +  '  |            |    |    ' +'| E:'+ gear
-  gearString2 = gearString2 + (' ' * (108 - len(gearString2))) + '|'
-  gold = (' ' * (2 - len(str(gold)))) + str(gold)
+  hd = classes[charClass]['hd']
+  hp = diceRoll(1,hd) + mods[4] 
+  if hp < 1:
+    hp = 1
 
-  saveStr = ' |'
-  for save in classes[charClass]['saves']:
-    saveStr = saveStr + (' ' * (3 - len(str(save)))) + str(save) + ' '
-  saveStr = saveStr + '|'
+  gold = str(gold)
+
+  saves = classes[charClass]['saves']
 
   if charClass == 'Magic User':
-    spell = '[ Spells: ' + random.choice(spells) + ' ]'
-  elif charClass == 'Cleric':
-    spell = 'TU -- 1 HD: 7, 2 HD: 9, 3 HD: 11 |'
+    spell = random.choice(spells) 
+#  elif charClass == 'Cleric':
+#    spell = 'TU -- 1 HD: 7, 2 HD: 9, 3 HD: 11 |'
   else:
-   spell = '' 
+    spell = 'None' 
 
-  print(
-    '| ' + charClass + ws + ' |  ' + str(hp) + ' |  ' + str(ac) + ' | ' + gearString + ' | ' + torches + ' | '  + rations + ' | ' + str(gold)  + '|' + saveStr 
-    )
-  print(gearString2, spell)
-  print('-' * 143)
-print('...Everyone has a Backpack, tinderbox, and waterskin. T = Torches, R = Rations G = Gold')
+  charSheet = [ 
+    charClass, 
+    str('STR ' + str(stats[0])),
+    str('INT ' + str(stats[1])),
+    str('WIS ' + str(stats[2])), 
+    str('DEX ' + str(stats[3])),
+    str('CON ' + str(stats[4])),
+    str('CHA ' + str(stats[5])),
+    str('----------------------'),
+    str('HP: ' + str(hp) + '  AC: ' + str(ac)), 
+    str('Torches: ' + torches),
+    str('Rations: '  + rations),
+    str('Armor: ' + armor),
+    str('Weapon:'),
+    str('  ' + weapon[0]),
+    str('  ' + weapon[1]),
+    str('Equipment:'),
+    '  Backpack',
+    '  Tinderbox',
+    '  Waterskin',
+    str('  ' + gear[0]),
+    str('  ' + gear[1]),
+    str('  ' + gear[2]),
+    str('  ' + gear[3]),
+    str('Gold: ' + gold),
+    str('----------------------'),
+    str('Death/poison       ' + str(saves[0])),
+    str('Wands              ' + str(saves[1])),
+    str('Paralysis/Petrify  ' + str(saves[2])), 
+    str('Breath Attacks     ' + str(saves[3])),
+    str('Spells/Rods/Staves ' + str(saves[4])),
+    str('----------------------'),
+    'Spells:',
+    spell,
+    ]
+
+  party.append(charSheet)
+  
+# print all sheets
+characterCount = range(len(party)) 
+partySubset = []
+modulus = 6
+for index in enumerate(characterCount, start=1):
+  partySubset.append(party[index[1]])
+  if index[0] % modulus == 0:
+    printSheets(partySubset)
+    print()
+    partySubset = []
+
+if len(partySubset) > 0:
+  printSheets(partySubset)
+print()
 print('...Total Party Gold:',str(totalGold))
 quit()
