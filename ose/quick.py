@@ -176,11 +176,6 @@ for i in range(charCount):
   for j in range(0,6):
     roll = diceRoll(3,6)
     stats.append(roll)
-  
-  charClass = selectClass(stats)
-
-  ac, armor, weapon, gear, torches, rations, gold = rollEquip(charClass, stats[3])
-  totalGold += gold
 
   mods = []
   position = 0
@@ -196,6 +191,13 @@ for i in range(charCount):
       if score <= roll:
         mod = statMod[score]
     mods.append(mod)
+  
+  charClass = selectClass(stats)
+
+  ac, armor, weapon, gear, torches, rations, gold = rollEquip(charClass, stats[3])
+  totalGold += gold
+
+
 
   hd = classes[charClass]['hd']
   hp = diceRoll(1,hd) + mods[4] 
