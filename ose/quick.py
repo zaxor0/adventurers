@@ -175,7 +175,7 @@ for i in range(charCount):
   position = 0
   for roll in stats:
     position += 1
-    if position == 2:    # intelligence
+    if position == 2:   # intelligence
       statMod = intMod
     elif position == 6: # charisma
       statMod = chaMod
@@ -183,12 +183,8 @@ for i in range(charCount):
       statMod = standardMod
     for score in statMod:
       if score <= roll:
-        mod = standardMod[score]
+        mod = statMod[score]
     mods.append(mod)
-  modStr = ''
-  for mod in mods:
-    ws = ' ' * (4 - len(str(mod)))
-    modStr = modStr + ws + str(mod)
 
   hd = classes[charClass]['hd']
   hp = diceRoll(1,hd) + mods[4] 
@@ -204,16 +200,16 @@ for i in range(charCount):
 #  elif charClass == 'Cleric':
 #    spell = 'TU -- 1 HD: 7, 2 HD: 9, 3 HD: 11 |'
   else:
-    spell = 'None' 
+    spell = '    ' 
 
   charSheet = [ 
     charClass, 
-    str('STR ' + str(stats[0])),
-    str('INT ' + str(stats[1])),
-    str('WIS ' + str(stats[2])), 
-    str('DEX ' + str(stats[3])),
-    str('CON ' + str(stats[4])),
-    str('CHA ' + str(stats[5])),
+    str('STR ' + str(stats[0]) + (' ' * ( 4- len(str(stats[0])))) + '(' + str(mods[0]) + ')' ),
+    str('INT ' + str(stats[1]) + (' ' * ( 4- len(str(stats[1])))) + '(' + str(mods[1]) + ')' ),
+    str('WIS ' + str(stats[2]) + (' ' * ( 4- len(str(stats[2])))) + '(' + str(mods[2]) + ')' ),
+    str('DEX ' + str(stats[3]) + (' ' * ( 4- len(str(stats[3])))) + '(' + str(mods[3]) + ')' ),
+    str('CON ' + str(stats[4]) + (' ' * ( 4- len(str(stats[4])))) + '(' + str(mods[4]) + ')' ),
+    str('CHA ' + str(stats[5]) + (' ' * ( 4- len(str(stats[5])))) + '(' + str(mods[5]) + ')' ),
     str('----------------------'),
     str('HP: ' + str(hp) + '  AC: ' + str(ac)), 
     str('Torches: ' + torches),
