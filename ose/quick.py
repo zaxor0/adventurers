@@ -35,17 +35,18 @@ chaMod = { 3 : -2, 4 : -1, 6 : -1, 9 : 0, 13 : 1, 16 : 1, 18 : 2}
 spells = ['Charm Person', 'Detect Magic', 'Floating Disc', 'Hold Portal', 'Light', 'Magic Missile', 'Protection from Evil', 'Read Language','Read Magic', 'Shield', 'Sleep', 'Ventriloquism' ]
 
 # FUNCTIONS
+# print out a vertical character sheet
 def printSheets(party):
   for row in range(len(charSheet)):
     line = ''
     for char in range(len(party)):
       charLine = party[char][row]
-      ws = ' ' * (23 - len(charLine)) 
+      ws = ' ' * (24 - len(charLine)) 
       charLine = ' '  + charLine + ws + '|'
       line = line + charLine
     print(line)
 
-
+# roll dice
 def diceRoll(dieCount,dieSides):
   dieTotal = 0
   for i in range(0,dieCount):
@@ -55,6 +56,49 @@ def diceRoll(dieCount,dieSides):
     dieTotal += dieVal
   return(dieTotal)
 
+# Select best class from a list of possible classes
+def selectClass(stats):
+  # audit initial 4 stats; str for fighters, int for mage, wis for cleric, and dex for thief
+  primaryStats = stats[:4]
+  highestPrimary = max(primaryStats)
+  highestStat = max(stats) 
+
+  # generate array of possible classes for this character
+  possibleClasses = []
+  if stats[0] == highestPrimary:
+    possibleClasses.append('Fighter')
+  if stats[1] == highestPrimary:
+    possibleClasses.append('Magic User')
+  if stats[2] == highestPrimary:
+    possibleClasses.append('Cleric')
+  if stats[3] == highestPrimary:
+    possibleClasses.append('Thief')
+
+  # classes with min. req.
+  if stats[4] >= 9:
+    possibleClasses.append('Dwarf')
+  if stats[1] >= 9:
+    possibleClasses.append('Elf')
+  if stats[4] >= 9 and stats[3] >= 9:
+    possibleClasses.append('Halfling')
+
+  if len(possibleClasses) > 1:
+    # keep the party to unique classes only
+    charClass = random.choice(possibleClasses)
+    # print(charClass, party)
+    if charClass in partyClasses:
+      possibleClasses.remove(charClass)
+      if len(party) > 1 :
+        charClass = random.choice(possibleClasses)
+      else:
+        charClass = possibleClasses[0]
+    partyClasses.append(charClass)
+  else:
+    charClass = possibleClasses[0]
+
+  return charClass
+
+# Roll for Equipment, Armor, Weapons
 def rollEquip(charClass, dex):
   # basic gear
   torches = str(diceRoll(1,6))
@@ -103,21 +147,23 @@ def rollEquip(charClass, dex):
   # magic users only get daggers
   if charClass == 'Magic User':
     weaponSelection.append('Dagger')
-
+    weaponSelection.append('')
   # clerics only get blunt weapons
-  if charClass == 'Cleric':
+  elif charClass == 'Cleric':
     weapon = clericWeapons[diceRoll(1,4) - 1]
     secondWeapon = clericWeapons[diceRoll(1,4) - 1]
     while secondWeapon == weapon:
       secondWeapon = clericWeapons[diceRoll(1,4) - 1]
     weaponSelection.append(weapon)
     weaponSelection.append(secondWeapon)
-
   # everyone else get 1 melee and 1 second weapon
-  weapon = meleeWeapons[diceRoll(1,9) - 1]
-  secondWeapon = weapons[diceRoll(1,12) - 1]
-  weaponSelection.append(weapon)
-  weaponSelection.append(secondWeapon)
+  else:
+    weapon = meleeWeapons[diceRoll(1,9) - 1]
+    secondWeapon = weapons[diceRoll(1,12) - 1]
+    while secondWeapon == weapon:
+      secondWeapon = weapons[diceRoll(1,12) - 1]
+    weaponSelection.append(weapon)
+    weaponSelection.append(secondWeapon)
   
   # everyon gets 3d6 of gold
   gold = diceRoll(3,6)
@@ -131,42 +177,7 @@ for i in range(charCount):
     roll = diceRoll(3,6)
     stats.append(roll)
   
-  primaryStats = stats[:4]
-  highestPrimary = max(primaryStats)
-  highestStat = max(stats) 
-
-  # generate array of possible classes for this character
-  possibleClasses = []
-  if stats[0] == highestPrimary:
-    possibleClasses.append('Fighter')
-  if stats[1] == highestPrimary:
-    possibleClasses.append('Magic User')
-  if stats[2] == highestPrimary:
-    possibleClasses.append('Cleric')
-  if stats[3] == highestPrimary:
-    possibleClasses.append('Thief')
-
-  # classes with min. req.
-  if stats[4] >= 9:
-    possibleClasses.append('Dwarf')
-  if stats[1] >= 9:
-    possibleClasses.append('Elf')
-  if stats[4] >= 9 and stats[3] >= 9:
-    possibleClasses.append('Halfling')
-
-  if len(possibleClasses) > 1:
-    # keep the party to unique classes only
-    charClass = random.choice(possibleClasses)
-    # print(charClass, party)
-    if charClass in party:
-      possibleClasses.remove(charClass)
-      if len(party) > 1 :
-        charClass = random.choice(possibleClasses)
-      else:
-        charClass = possibleClasses[0]
-    partyClasses.append(charClass)
-  else:
-    charClass = possibleClasses[0]
+  charClass = selectClass(stats)
 
   ac, armor, weapon, gear, torches, rations, gold = rollEquip(charClass, stats[3])
   totalGold += gold
@@ -195,12 +206,19 @@ for i in range(charCount):
 
   saves = classes[charClass]['saves']
 
+  classAbility = ''
+  classAbilityDetails = ['','']
   if charClass == 'Magic User':
-    spell = random.choice(spells) 
-#  elif charClass == 'Cleric':
-#    spell = 'TU -- 1 HD: 7, 2 HD: 9, 3 HD: 11 |'
-  else:
-    spell = '    ' 
+    classAbility = 'Spells:'
+    classAbilityDetails[0] = random.choice(spells) 
+  elif charClass == 'Cleric':
+    classAbility = 'Turn Undead:'
+    classAbilityDetails[0] = '1 HD  2 HD  3 HD'
+    classAbilityDetails[1] = '  7     9     11'
+  elif charClass == 'Thief':
+    classAbility = 'Thief Skills:'
+    classAbilityDetails[0] = 'CS TR HN  HS MS OL PP'
+    classAbilityDetails[1] = '87 10 1-2 10 20 15 20'
 
   charSheet = [ 
     charClass, 
@@ -234,8 +252,9 @@ for i in range(charCount):
     str('Breath Attacks     ' + str(saves[3])),
     str('Spells/Rods/Staves ' + str(saves[4])),
     str('----------------------'),
-    'Spells:',
-    spell,
+    classAbility,
+    classAbilityDetails[0],
+    classAbilityDetails[1],
     ]
 
   party.append(charSheet)
