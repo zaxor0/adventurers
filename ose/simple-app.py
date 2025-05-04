@@ -1,11 +1,10 @@
 #!/usr/bin/python3
-
-from quick import *
+from ose import *
 from flask import Flask, render_template
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-  htmlBody = returnSheets('test') 
+  htmlBody = rollChar('test') 
   return render_template("sheet.html", htmlBody=htmlBody)

@@ -3,17 +3,7 @@
 import random
 import sys
 
-# ARGUMENTS
-try:
-  charCount = int(sys.argv[1])
-except:
-  print('missing number of characters')
-  quit()
-
 # VARIABLES
-party = []
-partyClasses = []
-totalGold = 0
 abilities = ['STR', 'INT','WIS','DEX','CON','CHA']
 classes = {
   'Fighter' : { 'hd' :  8, 'saves' : [12, 13, 14, 15, 16] },  'Dwarf' : { 'hd':  8 , 'saves' : [8, 9, 10, 13, 12] },
@@ -34,17 +24,10 @@ intMod = { 3 : 0, 13 : 1, 16 : 2, 18 : 3}
 chaMod = { 3 : -2, 4 : -1, 6 : -1, 9 : 0, 13 : 1, 16 : 1, 18 : 2}
 spells = ['Charm Person', 'Detect Magic', 'Floating Disc', 'Hold Portal', 'Light', 'Magic Missile', 'Protection from Evil', 'Read Language','Read Magic', 'Shield', 'Sleep', 'Ventriloquism' ]
 
+ 
+
+
 # FUNCTIONS
-# print out a vertical character sheet
-def printSheets(party):
-  for row in range(len(charSheet)):
-    line = ''
-    for char in range(len(party)):
-      charLine = party[char][row]
-      ws = ' ' * (24 - len(charLine)) 
-      charLine = ' '  + charLine + ws + '|'
-      line = line + charLine
-    print(line)
 
 # roll dice
 def diceRoll(dieCount,dieSides):
@@ -57,7 +40,7 @@ def diceRoll(dieCount,dieSides):
   return(dieTotal)
 
 # Select best class from a list of possible classes
-def selectClass(stats):
+def selectClass(stats, partyClasses, party):
   # audit initial 4 stats; str for fighters, int for mage, wis for cleric, and dex for thief
   primaryStats = stats[:4]
   highestPrimary = max(primaryStats)
@@ -171,7 +154,7 @@ def rollEquip(charClass, dex):
   # return all equipment
   return ac, armor, weaponSelection, gear, torches, rations, gold
 
-for i in range(charCount):
+def charSheetGen(totalGold, partyClasses, party):
   stats = []
   for j in range(0,6):
     roll = diceRoll(3,6)
@@ -192,12 +175,10 @@ for i in range(charCount):
         mod = statMod[score]
     mods.append(mod)
   
-  charClass = selectClass(stats)
+  charClass = selectClass(stats, partyClasses, party)
 
   ac, armor, weapon, gear, torches, rations, gold = rollEquip(charClass, stats[3])
   totalGold += gold
-
-
 
   hd = classes[charClass]['hd']
   hp = diceRoll(1,hd) + mods[4] 
@@ -259,21 +240,43 @@ for i in range(charCount):
     classAbilityDetails[1],
     ]
 
-  party.append(charSheet)
-  
-# print all sheets
-characterCount = range(len(party)) 
-partySubset = []
-modulus = 6
-for index in enumerate(characterCount, start=1):
-  partySubset.append(party[index[1]])
-  if index[0] % modulus == 0:
-    printSheets(partySubset)
-    print()
-    partySubset = []
+  return charSheet, totalGold
 
-if len(partySubset) > 0:
-  printSheets(partySubset)
-print()
-print('...Total Party Gold:',str(totalGold))
-quit()
+# print out a vertical character sheet
+def printSheets(party):
+  output = ""
+  for row in range(len(party[0])):
+    line = ''
+    for char in range(len(party)):
+      charLine = party[char][row]
+      ws = ' ' * (24 - len(charLine)) 
+      charLine = ' '  + charLine + ws + '|'
+      line = line + charLine
+    output = output + "    |" + line + "\n"
+  return output
+
+# return all sheets
+def returnSheets(dumbVar):
+  charCount = 4
+  party = []
+  partyClasses = []
+  totalGold = 0
+  for i in range(charCount):
+    charSheet, totalGold = charSheetGen(totalGold, partyClasses, party)
+    party.append(charSheet)
+    
+
+  characterCount = range(len(party)) 
+  partySubset = []
+  modulus = 6
+  for index in enumerate(characterCount, start=1):
+    partySubset.append(party[index[1]])
+    if index[0] % modulus == 0:
+      output = printSheets(partySubset)
+      partySubset = []
+  
+  if len(partySubset) > 0:
+    output = printSheets(partySubset)
+  output = output + "\n" + '    Total Party Gold:' + str(totalGold)
+  return output
+
